@@ -133,7 +133,7 @@ func (handler *CommandHandler) CommandMux(ce *CommandEvent) {
 		handler.CommandLogout(ce)
 	case "toggle":
 		handler.CommandToggle(ce)
-	case "login-matrix", "sync", "list", "open", "pm", "invite-link", "join", "create":
+	case "login-matrix", "sync", "list", "open", "pm", "invite-link", "join", "create", "search":
 		if !ce.User.HasSession() {
 			ce.Reply("You are not logged in. Use the `login` command to log into WhatsApp.")
 			return
@@ -153,6 +153,8 @@ func (handler *CommandHandler) CommandMux(ce *CommandEvent) {
 			handler.CommandOpen(ce)
 		case "pm":
 			handler.CommandPM(ce)
+		case "search":
+			handler.CommandSearch(ce)
 		// case "invite-link":
 		// 	handler.CommandInviteLink(ce)
 		// case "join":
@@ -602,6 +604,7 @@ func (handler *CommandHandler) CommandHelp(ce *CommandEvent) {
 		cmdPrefix + cmdToggleHelp,
 		cmdPrefix + cmdSyncHelp,
 		cmdPrefix + cmdListHelp,
+		cmdPrefix + cmdSearchHelp,
 		cmdPrefix + cmdOpenHelp,
 		cmdPrefix + cmdPMHelp,
 		cmdPrefix + cmdInviteLinkHelp,
@@ -720,17 +723,46 @@ func (handler *CommandHandler) CommandDeleteAllPortals(ce *CommandEvent) {
 
 const cmdListHelp = `list <contacts|groups> [page] [items per page] - Get a list of all contacts and groups.`
 
-func formatContacts(contacts bool, input map[string]pulsesms.Contact) (result []string) {
+const cmdSearchHelp = `search <contacts|groups> <search>`
+
+func formatContacts(contacts bool, input map[string]pulsesms.Contact, filter string) (result []string) {
 	for _, contact := range input {
-		if contacts {
-			// result = append(result, fmt.Sprintf("* %s / %s - `%s`", contact.Name, contact.Notify, contact.PID[:len(contact.PID)-len(whatsapp.NewUserSuffix)]))
-			result = append(result, fmt.Sprintf("* %s - `%s`", contact.Name, contact.PhoneNumber[:len(contact.PhoneNumber)]))
-		} else {
-			result = append(result, fmt.Sprintf("* %s - `%s`", contact.Name, contact.PhoneNumber))
+		if strings.Contains(filter, contact.Name) {
+			if contacts {
+				// result = append(result, fmt.Sprintf("* %s / %s - `%s`", contact.Name, contact.Notify, contact.PID[:len(contact.PID)-len(whatsapp.NewUserSuffix)]))
+				result = append(result, fmt.Sprintf("* %s - `%s`", contact.Name, contact.PhoneNumber[:len(contact.PhoneNumber)]))
+			} else {
+				result = append(result, fmt.Sprintf("* %s - `%s`", contact.Name, contact.PhoneNumber))
+			}
 		}
 	}
 	sort.Sort(sort.StringSlice(result))
 	return
+}
+
+func (handler *CommandHandler) CommandSearch(ce *CommandEvent) {
+	if len(ce.Args) != 2 {
+		ce.Reply("**Usage:** `search <contacts|groups> <search>`")
+		return
+	}
+	mode := strings.ToLower(ce.Args[0])
+	if mode[0] != 'g' && mode[0] != 'c' {
+		ce.Reply("**Usage:** `search <contacts|groups> <search>`")
+		return
+	}
+	search := strings.ToLower(ce.Args[1])
+	contacts := mode[0] == 'c'
+	typeName := "Groups"
+	if contacts {
+		typeName = "Contacts"
+	}
+	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, search)
+	if len(result) == 0 {
+		ce.Reply("No %s found", strings.ToLower(typeName))
+		return
+	}
+
+	ce.Reply("### %s \n\n%s", typeName, strings.Join(result, "\n"))
 }
 
 func (handler *CommandHandler) CommandList(ce *CommandEvent) {
@@ -767,7 +799,7 @@ func (handler *CommandHandler) CommandList(ce *CommandEvent) {
 	if contacts {
 		typeName = "Contacts"
 	}
-	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts)
+	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, "")
 	if len(result) == 0 {
 		ce.Reply("No %s found", strings.ToLower(typeName))
 		return

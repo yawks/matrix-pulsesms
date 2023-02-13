@@ -462,6 +462,7 @@ func (user *User) Login(ce *CommandEvent) {
 	creds := pulsesms.BasicCredentials{Username: username, Password: pw}
 	err = user.Pulse.Login(creds)
 	if err != nil {
+		user.log.Infofln("basic credential to #%s#%s# : %s", username, pw, err)
 		ce.Reply("failed to login")
 		return
 	}
