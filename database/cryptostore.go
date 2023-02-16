@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+//go:build cgo && !nocrypto
 // +build cgo,!nocrypto
 
 package database
@@ -39,7 +40,7 @@ var _ crypto.Store = (*SQLCryptoStore)(nil)
 func NewSQLCryptoStore(db *Database, userID id.UserID, ghostIDFormat string) *SQLCryptoStore {
 	return &SQLCryptoStore{
 		SQLCryptoStore: crypto.NewSQLCryptoStore(db.DB, db.dialect, "", "",
-			[]byte("github.com/treethought/matrix-pulsesms"),
+			[]byte("github.com/treyawksethought/matrix-pulsesms"),
 			&cryptoLogger{db.log.Sub("CryptoStore")}),
 		UserID:        userID,
 		GhostIDFormat: ghostIDFormat,

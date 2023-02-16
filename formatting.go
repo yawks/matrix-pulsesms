@@ -23,7 +23,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/pulsesms"
 
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/format"

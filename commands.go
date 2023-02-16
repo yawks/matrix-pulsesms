@@ -32,7 +32,7 @@ import (
 	"maunium.net/go/mautrix/format"
 	"maunium.net/go/mautrix/id"
 
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/pulsesms"
 )
 
 type CommandHandler struct {

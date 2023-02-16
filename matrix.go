@@ -31,7 +31,7 @@ import (
 	"maunium.net/go/mautrix/format"
 	"maunium.net/go/mautrix/id"
 
-	"github.com/treethought/matrix-pulsesms/database"
+	"github.com/yawks/matrix-pulsesms/database"
 )
 
 type MatrixHandler struct {

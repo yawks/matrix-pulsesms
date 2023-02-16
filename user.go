@@ -42,8 +42,8 @@ import (
 	"maunium.net/go/mautrix/format"
 	"maunium.net/go/mautrix/id"
 
-	"github.com/treethought/matrix-pulsesms/database"
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/matrix-pulsesms/database"
+	"github.com/yawks/pulsesms"
 )
 
 type User struct {

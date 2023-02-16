@@ -25,7 +25,7 @@ import (
 
 	log "maunium.net/go/maulogger/v2"
 
-	"github.com/treethought/matrix-pulsesms/database/upgrades"
+	"github.com/yawks/matrix-pulsesms/database/upgrades"
 )
 
 type Database struct {

@@ -34,16 +34,16 @@ import (
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
 
-	"github.com/treethought/matrix-pulsesms/config"
-	"github.com/treethought/matrix-pulsesms/database"
-	"github.com/treethought/matrix-pulsesms/database/upgrades"
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/matrix-pulsesms/config"
+	"github.com/yawks/matrix-pulsesms/database"
+	"github.com/yawks/matrix-pulsesms/database/upgrades"
+	"github.com/yawks/pulsesms"
 )
 
 var (
 	// These are static
 	Name = "matrix-pulsesms"
-	URL  = "https://github.com/treethought/matrix-pulsems"
+	URL  = "https://github.com/yawks/matrix-pulsems"
 	// This is changed when making a release
 	Version = "0.0.1"
 	// This is filled by init()

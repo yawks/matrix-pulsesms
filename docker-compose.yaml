@@ -1,7 +1,7 @@
 version: '3'
 services:
   pulse:
-    image: treethought/matrix-pulsesms
+    image: yawks/matrix-pulsesms
     build:
       context: .
     depends_on:

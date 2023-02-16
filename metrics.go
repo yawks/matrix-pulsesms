@@ -31,8 +31,8 @@ import (
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
 
-	"github.com/treethought/matrix-pulsesms/database"
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/matrix-pulsesms/database"
+	"github.com/yawks/pulsesms"
 )
 
 type MetricsHandler struct {
@@ -228,7 +228,7 @@ func (mh *MetricsHandler) updateStats() {
 		mh.messageCount.Set(float64(messageCount))
 	}
 
-    // TODO
+	// TODO
 	var encryptedGroupCount, encryptedPrivateCount, unencryptedGroupCount, unencryptedPrivateCount int
 	err = mh.db.QueryRowContext(mh.ctx, `
 			SELECT

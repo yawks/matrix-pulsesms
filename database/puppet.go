@@ -22,7 +22,7 @@ import (
 
 	log "maunium.net/go/maulogger/v2"
 
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/pulsesms"
 
 	"maunium.net/go/mautrix/id"
 )

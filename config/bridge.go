@@ -23,7 +23,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/pulsesms"
 
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"

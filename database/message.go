@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/pulsesms"
 
 	log "maunium.net/go/maulogger/v2"
 

@@ -32,7 +32,7 @@ import (
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
 
-	"github.com/treethought/matrix-pulsesms/database"
+	"github.com/yawks/matrix-pulsesms/database"
 )
 
 var NoSessionFound = crypto.NoSessionFound

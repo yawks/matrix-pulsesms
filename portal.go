@@ -49,8 +49,8 @@ import (
 	"maunium.net/go/mautrix/id"
 	"maunium.net/go/mautrix/pushrules"
 
-	"github.com/treethought/matrix-pulsesms/database"
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/matrix-pulsesms/database"
+	"github.com/yawks/pulsesms"
 )
 
 func (bridge *Bridge) GetPortalByMXID(mxid id.RoomID) *Portal {

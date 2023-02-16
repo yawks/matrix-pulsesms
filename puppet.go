@@ -26,8 +26,8 @@ import (
 	"maunium.net/go/mautrix/appservice"
 	"maunium.net/go/mautrix/id"
 
-	"github.com/treethought/matrix-pulsesms/database"
-	"github.com/treethought/pulsesms"
+	"github.com/yawks/matrix-pulsesms/database"
+	"github.com/yawks/pulsesms"
 )
 
 var userIDRegex *regexp.Regexp
@@ -168,7 +168,7 @@ type Puppet struct {
 }
 
 func (puppet *Puppet) PhoneNumber() string {
-    return puppet.PID
+	return puppet.PID
 }
 
 func (puppet *Puppet) IntentFor(portal *Portal) *appservice.IntentAPI {
