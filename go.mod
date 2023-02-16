@@ -10,12 +10,11 @@ require (
 	github.com/prometheus/client_golang v1.10.0
 	github.com/sirupsen/logrus v1.6.0
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
-	github.com/yawks/pulsesms v0.0.0-20230216214848-11666a575b18 // indirect
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
+	github.com/yawks/pulsesms v0.0.0-20230216214848-11666a575b18
+	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	maunium.net/go/mauflag v1.0.0
 	maunium.net/go/maulogger/v2 v2.2.4
 	maunium.net/go/mautrix v0.9.12
-	github.com/yawks/pulsesms v0.0.0-20230216214848-11666a575b18
 )
