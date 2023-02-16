@@ -194,7 +194,7 @@ func (bc BridgeConfig) FormatDisplayname(contact pulsesms.Contact) (string, int8
 	default:
 		quality = 0
 	}
-	return contact.Name, quality
+	return buf.String(), quality
 }
 
 func (bc BridgeConfig) FormatUsername(userID string) string {

@@ -61,14 +61,13 @@ bridge:
     # {{.}} is replaced with the phone number of the PulseSMS user.
     username_template: pulse_{{.}}
     # Displayname template for PulseSMS users.
-    # {{.Notify}} - nickname set by the PulseSMS user
-    # {{.Jid}}    - phone number (international format)
-    # The following variables are also available, but will cause problems on multi-user instances:
-    # {{.Name}}   - display name from contact list
+    # {{.PhoneNumber}} - phone number
+    # {{.Notify}}    - ?
+    # {{.Name}}   - contact name
     # {{.Short}}  - short display name from contact list
     # To use multiple if's, you need to use: {{else if .Name}}, for example:
-    # "{{if .Notify}}{{.Notify}}{{else if .Name}}{{.Name}}{{else}}{{.Jid}}{{end}} (WA)"
-    displayname_template: "{{if .Notify}}{{.Notify}}{{else}}{{.Jid}}{{end}} (WA)"
+    # "{{if .Notify}}{{.Notify}}{{else if .Name}}{{.Name}}{{else}}{{.PhoneNumber}}{{end}} (PS)"
+    displayname_template: "{{if .Notify}}{{.Notify}}{{else}}{{.Name}}{{end}} (PS)"
     # Localpart template for per-user room grouping community IDs.
     # On startup, the bridge will try to create these communities, add all of the specific user's
     # portals to the community, and invite the Matrix user to it.
