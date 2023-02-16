@@ -510,7 +510,6 @@ func (handler *CommandHandler) CommandHelp(ce *CommandEvent) {
 		cmdPrefix + cmdLoginHelp,
 		cmdPrefix + cmdLogoutHelp,
 		cmdPrefix + cmdDeleteSessionHelp,
-		cmdPrefix + cmdReconnectHelp,
 		cmdPrefix + cmdDisconnectHelp,
 		cmdPrefix + cmdDeleteConnectionHelp,
 		cmdPrefix + cmdPingHelp,
