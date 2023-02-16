@@ -331,7 +331,7 @@ func (portal *Portal) getMessageIntent(user *User, info pulsesms.Message) *appse
 	// sent from bridge user, don't resend message into portal room
 	if info.SentDevice > 0 {
 		portal.log.Infofln("message was sent by bridge user")
-        return nil
+		return nil
 	}
 
 	// message received from contact
@@ -1155,12 +1155,6 @@ func (portal *Portal) CreateMatrixRoom(user *User) error {
 
 func (portal *Portal) IsPrivateChat() bool {
 	return false
-	// return true
-	// if portal.isPrivate == nil {
-	// 	val := strings.HasSuffix(portal.Key.PID, whatsapp.NewUserSuffix)
-	// 	portal.isPrivate = &val
-	// }
-	// return *portal.isPrivate
 }
 
 func (portal *Portal) HasRelaybot() bool {
@@ -1293,8 +1287,6 @@ func (portal *Portal) removeUser(isSameUser bool, kicker *appservice.IntentAPI, 
 
 type base struct {
 	download func() ([]byte, error)
-	// info     whatsapp.MessageInfo
-	// context  whatsapp.ContextInfo
 	mimeType string
 }
 
@@ -1488,7 +1480,7 @@ func (portal *Portal) convertMatrixMessage(sender *User, evt *event.Event) (*pul
 		portal.bridge.Log.Warnfln("portal ID is not valid convoID: %s", portal.Key.PID)
 	}
 
-    id := generatePulseMessageID()
+	id := generatePulseMessageID()
 	msg := &pulsesms.Message{
 		ConversationID: convoID,
 		From:           sender.PID,

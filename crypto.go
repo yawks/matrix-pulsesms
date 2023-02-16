@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+//go:build cgo && !nocrypto
 // +build cgo,!nocrypto
 
 package main
@@ -138,7 +139,7 @@ func (helper *CryptoHelper) loginBot() (*mautrix.Client, error) {
 		Type:                     mautrix.AuthTypeHalfyAppservice,
 		Identifier:               mautrix.UserIdentifier{Type: mautrix.IdentifierTypeUser, User: string(helper.bridge.AS.BotMXID())},
 		DeviceID:                 deviceID,
-		InitialDeviceDisplayName: "WhatsApp Bridge",
+		InitialDeviceDisplayName: "PulseSMS Bridge",
 		StoreCredentials:         true,
 	})
 	if err != nil {

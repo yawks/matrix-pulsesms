@@ -57,11 +57,11 @@ metrics:
 
 # Bridge config
 bridge:
-    # Localpart template of MXIDs for WhatsApp users.
-    # {{.}} is replaced with the phone number of the WhatsApp user.
+    # Localpart template of MXIDs for PulseSMS users.
+    # {{.}} is replaced with the phone number of the PulseSMS user.
     username_template: pulse_{{.}}
-    # Displayname template for WhatsApp users.
-    # {{.Notify}} - nickname set by the WhatsApp user
+    # Displayname template for PulseSMS users.
+    # {{.Notify}} - nickname set by the PulseSMS user
     # {{.Jid}}    - phone number (international format)
     # The following variables are also available, but will cause problems on multi-user instances:
     # {{.Name}}   - display name from contact list
@@ -75,7 +75,7 @@ bridge:
     # (Note that, by default, non-admins might not have your homeserver's permission to create
     #  communities.)
     # {{.Localpart}} is the MXID localpart and {{.Server}} is the MXID server part of the user.
-    # whatsapp_{{.Localpart}}={{.Server}} is a good value that should work for any user.
+    # PulseSMS_{{.Localpart}}={{.Server}} is a good value that should work for any user.
     community_template: null
 
     # name of the space rooms are added to
@@ -84,14 +84,14 @@ bridge:
     # portal rooms to the space as child rooms and invite the Matrix user to it
     space_template: ""
 
-    # WhatsApp connection timeout in seconds.
+    # PulseSMS connection timeout in seconds.
     connection_timeout: 20
-    # If WhatsApp doesn't respond within connection_timeout, should the bridge try to fetch the message
+    # If PulseSMS doesn't respond within connection_timeout, should the bridge try to fetch the message
     # to see if it was actually bridged? Use this if you have problems with sends timing out but actually
     # succeeding.
     fetch_message_on_timeout: false
     # Whether or not the bridge should send a read receipt from the bridge bot when a message has been
-    # sent to WhatsApp. If fetch_message_on_timeout is enabled, a successful post-timeout fetch will
+    # sent to PulseSMS. If fetch_message_on_timeout is enabled, a successful post-timeout fetch will
     # trigger a read receipt too.
     delivery_receipts: false
     # Maximum number of times to retry connecting on connection error.
@@ -102,7 +102,7 @@ bridge:
     # Whether or not the bridge should send a notice to the user's management room when it retries connecting.
     # If false, it will only report when it stops retrying.
     report_connection_retry: true
-    # Whether or not the bridge should reconnect even if WhatsApp says another web client connected.
+    # Whether or not the bridge should reconnect even if PulseSMS says another web client connected.
     aggressive_reconnect: false
     # Maximum number of seconds to wait for chats to be sent at startup.
     # If this is too low and you have lots of chats, it could cause backfilling to fail.
@@ -132,7 +132,7 @@ bridge:
     # Whether or not puppet avatars should be fetched from the server even if an avatar is already set.
     # If you get 599 errors often, you should try disabling this.
     user_avatar_sync: true
-    # Whether or not Matrix users leaving groups should be bridged to WhatsApp
+    # Whether or not Matrix users leaving groups should be bridged to PulseSMS
     bridge_matrix_leave: true
     # Maximum number of seconds since last message in chat to skip
     # syncing the chat in any case. This setting will take priority
@@ -159,7 +159,7 @@ bridge:
     # manually.
     login_shared_secret: null
 
-    # Whether or not to invite own WhatsApp user's Matrix puppet into private
+    # Whether or not to invite own PulseSMS user's Matrix puppet into private
     # chat portals when backfilling if needed.
     # This always uses the default puppet instead of custom puppets due to
     # rate limits and timestamp massaging.
@@ -177,7 +177,7 @@ bridge:
     # When using double puppeting, should muted chats be muted in Matrix?
     mute_bridging: false
     # When using double puppeting, should archived chats be moved to a specific tag in Matrix?
-    # Note that WhatsApp unarchives chats when a message is received, which will also be mirrored to Matrix.
+    # Note that PulseSMS unarchives chats when a message is received, which will also be mirrored to Matrix.
     # This can be set to a tag (e.g. m.lowpriority), or null to disable.
     archive_tag: null
     # Same as above, but for pinned chats. The favorite tag is called m.favourite
@@ -185,11 +185,11 @@ bridge:
     # Whether or not mute status and tags should only be bridged when the portal room is created.
     tag_only_on_create: true
 
-    # Whether or not thumbnails from WhatsApp should be sent.
+    # Whether or not thumbnails from PulseSMS should be sent.
     # They're disabled by default due to very low resolution.
-    whatsapp_thumbnail: false
+    PulseSMS_thumbnail: false
 
-    # Allow invite permission for user. User can invite any bots to room with whatsapp
+    # Allow invite permission for user. User can invite any bots to room with PulseSMS
     # users (private chat and groups)
     allow_user_invite: false
 
@@ -224,7 +224,7 @@ bridge:
     # Permissions for using the bridge.
     # Permitted values:
     # relaybot - Talk through the relaybot (if enabled), no access otherwise
-    #     user - Access to use the bridge to chat with a WhatsApp account.
+    #     user - Access to use the bridge to chat with a PulseSMS account.
     #    admin - User level and some additional administration tools
     # Permitted keys:
     #        * - All Matrix users
@@ -244,7 +244,7 @@ bridge:
         management: "!foo:example.com"
         # List of users to invite to all created rooms that include the relaybot.
         invites: []
-        # The formats to use when sending messages to WhatsApp via the relaybot.
+        # The formats to use when sending messages to PulseSMS via the relaybot.
         message_formats:
             m.text: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"
             m.notice: "<b>{{ .Sender.Displayname }}</b>: {{ .Message }}"

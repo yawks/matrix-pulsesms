@@ -167,7 +167,7 @@ func (mx *MatrixHandler) handlePrivatePortal(roomID id.RoomID, inviter *User, pu
 
 func (mx *MatrixHandler) createPrivatePortalFromInvite(roomID id.RoomID, inviter *User, puppet *Puppet, portal *Portal) {
 	portal.MXID = roomID
-	portal.Topic = "WhatsApp private chat"
+	portal.Topic = "PulseSMS private chat"
 	_, _ = portal.MainIntent().SetRoomTopic(portal.MXID, portal.Topic)
 	if portal.bridge.Config.Bridge.PrivateChatPortalMeta {
 		portal.Name = puppet.Displayname
@@ -234,10 +234,10 @@ func (mx *MatrixHandler) HandlePuppetInvite(evt *event.Event, inviter *User, pup
 		mx.handlePrivatePortal(evt.RoomID, inviter, puppet, key)
 	} else if !hasBridgeBot {
 		mx.log.Debugln("Leaving multi-user room", evt.RoomID, "as", puppet.MXID, "after accepting invite from", evt.Sender)
-		_, _ = intent.SendNotice(evt.RoomID, "Please invite the bridge bot first if you want to bridge to a WhatsApp group.")
+		_, _ = intent.SendNotice(evt.RoomID, "Please invite the bridge bot first if you want to bridge to a PulseSMS group.")
 		_, _ = intent.LeaveRoom(evt.RoomID)
 	} else {
-		_, _ = intent.SendNotice(evt.RoomID, "This puppet will remain inactive until this room is bridged to a WhatsApp group.")
+		_, _ = intent.SendNotice(evt.RoomID, "This puppet will remain inactive until this room is bridged to a PulseSMS group.")
 	}
 }
 
@@ -445,7 +445,7 @@ func (mx *MatrixHandler) HandleRedaction(evt *event.Event) {
 		return
 	} else if !user.IsConnected() {
 		msg := format.RenderMarkdown(fmt.Sprintf("[%[1]s](https://matrix.to/#/%[1]s): \u26a0 "+
-			"You are not connected to WhatsApp, so your redaction was not bridged. "+
+			"You are not connected to PulseSMS, so your redaction was not bridged. "+
 			"Use `%[2]s reconnect` to reconnect.", user.MXID, mx.bridge.Config.Bridge.CommandPrefix), true, false)
 		msg.MsgType = event.MsgNotice
 		_, _ = mx.bridge.Bot.SendMessageEvent(evt.RoomID, event.EventMessage, msg)

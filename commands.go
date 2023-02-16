@@ -109,8 +109,6 @@ func (handler *CommandHandler) CommandMux(ce *CommandEvent) {
 		handler.CommandHelp(ce)
 	case "version":
 		handler.CommandVersion(ce)
-	case "reconnect", "connect":
-		handler.CommandReconnect(ce)
 	case "disconnect":
 		handler.CommandDisconnect(ce)
 	case "ping":
@@ -135,10 +133,10 @@ func (handler *CommandHandler) CommandMux(ce *CommandEvent) {
 		handler.CommandToggle(ce)
 	case "login-matrix", "sync", "list", "open", "pm", "invite-link", "join", "create", "search":
 		if !ce.User.HasSession() {
-			ce.Reply("You are not logged in. Use the `login` command to log into WhatsApp.")
+			ce.Reply("You are not logged in. Use the `login` command to log into PulseSMS.")
 			return
 		} else if !ce.User.IsConnected() {
-			ce.Reply("You are not connected to WhatsApp. Use the `reconnect` command to reconnect.")
+			ce.Reply("You are not connected to PulseSMS. Use the `reconnect` command to reconnect.")
 			return
 		}
 
@@ -174,7 +172,7 @@ func (handler *CommandHandler) CommandDiscardMegolmSession(ce *CommandEvent) {
 		ce.Reply("Only the bridge admin can reset Megolm sessions")
 	} else {
 		handler.bridge.Crypto.ResetSession(ce.RoomID)
-		ce.Reply("Successfully reset Megolm session in this room. New decryption keys will be shared the next time a message is sent from WhatsApp.")
+		ce.Reply("Successfully reset Megolm session in this room. New decryption keys will be shared the next time a message is sent from PulseSMS.")
 	}
 }
 
@@ -233,7 +231,6 @@ const cmdInviteLinkHelp = `invite-link - Get an invite link to the current group
 // }
 
 const cmdJoinHelp = `join <invite link> - Join a group chat with an invite link.`
-const inviteLinkPrefix = "https://chat.whatsapp.com/"
 
 // func (handler *CommandHandler) CommandJoin(ce *CommandEvent) {
 // 	if len(ce.Args) == 0 {
@@ -379,7 +376,7 @@ func (handler *CommandHandler) CommandSetPowerLevel(ce *CommandEvent) {
 	}
 }
 
-const cmdLoginHelp = `login - Authenticate this Bridge as WhatsApp Web Client`
+const cmdLoginHelp = `login - Authenticate this Bridge as PulseSMS Web Client`
 
 // CommandLogin handles login command
 func (handler *CommandHandler) CommandLogin(ce *CommandEvent) {
@@ -391,7 +388,7 @@ func (handler *CommandHandler) CommandLogin(ce *CommandEvent) {
 	}
 }
 
-const cmdLogoutHelp = `logout - Logout from WhatsApp`
+const cmdLogoutHelp = `logout - Logout from PulseSMS`
 
 // CommandLogout handles !logout command
 func (handler *CommandHandler) CommandLogout(ce *CommandEvent) {
@@ -406,7 +403,7 @@ func (handler *CommandHandler) CommandLogout(ce *CommandEvent) {
 	if puppet.CustomMXID != "" {
 		err := puppet.SwitchCustomMXID("", "")
 		if err != nil {
-			ce.User.log.Warnln("Failed to logout-matrix while logging out of WhatsApp:", err)
+			ce.User.log.Warnln("Failed to logout-matrix while logging out of PulseSMS:", err)
 		}
 	}
 	ce.User.removeFromPIDMap()
@@ -433,35 +430,11 @@ func (handler *CommandHandler) CommandToggle(ce *CommandEvent) {
 		ce.Reply("You're not logged in with your Matrix account.")
 		return
 	}
-	// if ce.Args[0] == "presence" || ce.Args[0] == "all" {
-	// 	customPuppet.EnablePresence = !customPuppet.EnablePresence
-	// 	var newPresence whatsapp.Presence
-	// 	if customPuppet.EnablePresence {
-	// 		newPresence = whatsapp.PresenceAvailable
-	// 		ce.Reply("Enabled presence bridging")
-	// 	} else {
-	// 		newPresence = whatsapp.PresenceUnavailable
-	// 		ce.Reply("Disabled presence bridging")
-	// 	}
-	// 	if ce.User.IsConnected() {
-	// 		_, err := ce.User.Conn.Presence("", newPresence)
-	// 		if err != nil {
-	// 			ce.User.log.Warnln("Failed to set presence:", err)
-	// 		}
-	// 	}
-	// }
-	// if ce.Args[0] == "receipts" || ce.Args[0] == "all" {
-	// 	customPuppet.EnableReceipts = !customPuppet.EnableReceipts
-	// 	if customPuppet.EnableReceipts {
-	// 		ce.Reply("Enabled read receipt bridging")
-	// 	} else {
-	// 		ce.Reply("Disabled read receipt bridging")
-	// 	}
-	// }
+
 	customPuppet.Update()
 }
 
-const cmdDeleteSessionHelp = `delete-session - Delete session information and disconnect from WhatsApp without sending a logout request`
+const cmdDeleteSessionHelp = `delete-session - Delete session information and disconnect from PulseSMS without sending a logout request`
 
 func (handler *CommandHandler) CommandDeleteSession(ce *CommandEvent) {
 	if ce.User.Session == nil && ce.User.Pulse == nil {
@@ -475,64 +448,6 @@ func (handler *CommandHandler) CommandDeleteSession(ce *CommandEvent) {
 	ce.Reply("Session information purged")
 }
 
-const cmdReconnectHelp = `reconnect - Reconnect to WhatsApp`
-
-func (handler *CommandHandler) CommandReconnect(ce *CommandEvent) {
-	ce.Reply("reconnect not yet supported, please login againn")
-	// if ce.User.Conn == nil {
-	// 	if ce.User.Session == nil {
-	// 		ce.Reply("No existing connection and no session. Did you mean `login`?")
-	// 	} else {
-	// 		ce.Reply("No existing connection, creating one...")
-	// 		ce.User.Connect(false)
-	// 	}
-	// 	return
-	// }
-
-	// wasConnected := true
-	// ce.User.Pulse = nil
-
-	// ctx := context.Background()
-
-	// err = ce.User.Conn.Restore(true, ctx)
-	// if err == whatsapp.ErrInvalidSession {
-	// 	if ce.User.Session != nil {
-	// 		ce.User.log.Debugln("Got invalid session error when reconnecting, but user has session. Retrying using RestoreWithSession()...")
-	// 		ce.User.Pulse.SetSession(*ce.User.Session)
-	// 		err = ce.User.Conn.Restore(true, ctx)
-	// 	} else {
-	// 		ce.Reply("You are not logged in.")
-	// 		return
-	// 	}
-	// } else if err == whatsapp.ErrLoginInProgress {
-	// 	ce.Reply("A login or reconnection is already in progress.")
-	// 	return
-	// } else if err == whatsapp.ErrAlreadyLoggedIn {
-	// 	ce.Reply("You were already connected.")
-	// 	return
-	// }
-	// if err != nil {
-	// 	ce.User.log.Warnln("Error while reconnecting:", err)
-	// 	ce.Reply("Unknown error while reconnecting: %v", err)
-	// 	ce.User.log.Debugln("Disconnecting due to failed session restore in reconnect command...")
-	// 	err = ce.User.Conn.Disconnect()
-	// 	if err != nil {
-	// 		ce.User.log.Errorln("Failed to disconnect after failed session restore in reconnect command:", err)
-	// 	}
-	// 	return
-	// }
-	// ce.User.ConnectionErrors = 0
-
-	// var msg string
-	// if wasConnected {
-	// 	msg = "Reconnected successfully."
-	// } else {
-	// 	msg = "Connected successfully."
-	// }
-	// ce.Reply(msg)
-	// ce.User.PostLogin()
-}
-
 const cmdDeleteConnectionHelp = `delete-connection - Disconnect ignoring errors and delete internal connection state.`
 
 func (handler *CommandHandler) CommandDeleteConnection(ce *CommandEvent) {
@@ -544,7 +459,7 @@ func (handler *CommandHandler) CommandDeleteConnection(ce *CommandEvent) {
 	ce.Reply("Successfully disconnected. Use the `reconnect` command to reconnect.")
 }
 
-const cmdDisconnectHelp = `disconnect - Disconnect from WhatsApp (without logging out)`
+const cmdDisconnectHelp = `disconnect - Disconnect from PulseSMS (without logging out)`
 
 func (handler *CommandHandler) CommandDisconnect(ce *CommandEvent) {
 	if ce.User.Pulse == nil {
@@ -554,10 +469,10 @@ func (handler *CommandHandler) CommandDisconnect(ce *CommandEvent) {
 	ce.User.Pulse.Disconnect()
 	ce.User.bridge.Metrics.TrackConnectionState(ce.User.PID, false)
 	ce.User.sendBridgeStatus(AsmuxPong{Error: AsmuxWANotConnected})
-	ce.Reply("Successfully disconnected. Use the `reconnect` command to reconnect.")
+	ce.Reply("Successfully disconnected. Use the `login` command to reconnect.")
 }
 
-const cmdPingHelp = `ping - Check your connection to WhatsApp.`
+const cmdPingHelp = `ping - Check your connection to PulseSMS.`
 
 func (handler *CommandHandler) CommandPing(ce *CommandEvent) {
 	if ce.User.Session == nil {
@@ -729,7 +644,6 @@ func formatContacts(contacts bool, input map[string]pulsesms.Contact, filter str
 	for _, contact := range input {
 		if strings.Contains(filter, contact.Name) {
 			if contacts {
-				// result = append(result, fmt.Sprintf("* %s / %s - `%s`", contact.Name, contact.Notify, contact.PID[:len(contact.PID)-len(whatsapp.NewUserSuffix)]))
 				result = append(result, fmt.Sprintf("* %s - `%s`", contact.Name, contact.PhoneNumber[:len(contact.PhoneNumber)]))
 			} else {
 				result = append(result, fmt.Sprintf("* %s - `%s`", contact.Name, contact.PhoneNumber))
@@ -924,7 +838,7 @@ func (handler *CommandHandler) CommandPM(ce *CommandEvent) {
 	// ce.Reply("Created portal room and invited you to it.")
 }
 
-const cmdLoginMatrixHelp = `login-matrix <_access token_> - Replace your WhatsApp account's Matrix puppet with your real Matrix account.'`
+const cmdLoginMatrixHelp = `login-matrix <_access token_> - Replace your PulseSMS account's Matrix puppet with your real Matrix account.'`
 
 func (handler *CommandHandler) CommandLoginMatrix(ce *CommandEvent) {
 	if len(ce.Args) == 0 {
@@ -940,12 +854,12 @@ func (handler *CommandHandler) CommandLoginMatrix(ce *CommandEvent) {
 	ce.Reply("Successfully switched puppet")
 }
 
-const cmdLogoutMatrixHelp = `logout-matrix - Switch your WhatsApp account's Matrix puppet back to the default one.`
+const cmdLogoutMatrixHelp = `logout-matrix - Switch your PulseSMS account's Matrix puppet back to the default one.`
 
 func (handler *CommandHandler) CommandLogoutMatrix(ce *CommandEvent) {
 	puppet := handler.bridge.GetPuppetByPID(ce.User.PID)
 	if len(puppet.CustomMXID) == 0 {
-		ce.Reply("You had not changed your WhatsApp account's Matrix puppet.")
+		ce.Reply("You had not changed your PulseSMS account's Matrix puppet.")
 		return
 	}
 	err := puppet.SwitchCustomMXID("", "")

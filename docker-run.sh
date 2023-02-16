@@ -28,4 +28,4 @@ fi
 
 # cd /data
 fixperms
-exec su-exec $UID:$GID /usr/bin/matrix-pulsesms
+exec su-exec $UID:$GID /usr/bin/matrix-pulsesms -c /data/config.yaml

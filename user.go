@@ -18,6 +18,8 @@
 package main
 
 import (
+	"crypto/sha1"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -29,6 +31,7 @@ import (
 	"time"
 
 	"github.com/skip2/go-qrcode"
+	"golang.org/x/crypto/pbkdf2"
 	log "maunium.net/go/maulogger/v2"
 
 	"maunium.net/go/mautrix/appservice"
@@ -437,13 +440,19 @@ func (user *User) loginQrChannel(ce *CommandEvent, qrChan <-chan string, eventID
 	}
 }
 
+func hashPasswordSalt(password string, salt []byte) string {
+	derivedKey := pbkdf2.Key([]byte(password), salt, 10000, 32, sha1.New)
+	b64Hash := base64.StdEncoding.EncodeToString(derivedKey)
+	return b64Hash
+}
+
 func (user *User) Login(ce *CommandEvent) {
-	if len(ce.Args) < 3 {
-		ce.Reply("invalid usage:\vuse login username password phonenumber")
+	if len(ce.Args) < 5 {
+		ce.Reply("invalid usage:\vuse login account_id password salt1 salt2  phonenumber")
 	}
 
-	username, pw, number := ce.Args[0], ce.Args[1], ce.Args[2]
-	user.bridge.Log.Debugf("Logging into pulse as %s", username)
+	account_id, pw, salt1, salt2, number := ce.Args[0], ce.Args[1], ce.Args[2], ce.Args[3], ce.Args[4]
+	user.bridge.Log.Debugf("Logging into pulse as %s", account_id)
 
 	// TODO maybe do this with custom puppet
 	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
@@ -459,15 +468,28 @@ func (user *User) Login(ce *CommandEvent) {
 		user.Pulse = pulsesms.New()
 	}
 
-	creds := pulsesms.BasicCredentials{Username: username, Password: pw}
+	/**creds := pulsesms.BasicCredentials{Username: username, Password: pw}
 	err = user.Pulse.Login(creds)
 	if err != nil {
 		user.log.Infofln("basic credential to #%s#%s# : %s", username, pw, err)
 		ce.Reply("failed to login")
 		return
+	}*/
+
+	hash := hashPasswordSalt(pw, []byte(salt2))
+	keyCreds := pulsesms.KeyCredentials{
+		AccountID:    pulsesms.AccountID(account_id),
+		PasswordHash: hash,
+		Salt:         salt1,
+	}
+	err = user.Pulse.GenerateKey(keyCreds)
+	if err != nil {
+		user.log.Infofln("basic credential to #%s#%s# : %s", account_id, pw, err)
+		ce.Reply("failed to login")
+		return
 	}
 
-	user.log.Debugln("Successful login as", username, "via command")
+	user.log.Debugln("Successful login as", account_id, "via command")
 	user.ConnectionErrors = 0
 	session := user.Pulse.GetKeyCredentials()
 	// TODO there's a bit of duplication between this and the provisioning API login method

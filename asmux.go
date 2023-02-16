@@ -37,12 +37,12 @@ const (
 )
 
 var asmuxHumanErrors = map[AsmuxError]string{
-	AsmuxWANotLoggedIn:  "You're not logged into WhatsApp",
-	AsmuxWANotConnected: "You're not connected to WhatsApp",
-	AsmuxWAConnecting:   "Trying to reconnect to WhatsApp. Please make sure WhatsApp is running on your phone and connected to the internet.",
-	AsmuxWATimeout:      "WhatsApp on your phone is not responding. Please make sure it is running and connected to the internet.",
-	AsmuxWAPingFalse:    "WhatsApp returned an error, reconnecting. Please make sure WhatsApp is running on your phone and connected to the internet.",
-	AsmuxWAPingError:    "WhatsApp returned an unknown error",
+	AsmuxWANotLoggedIn:  "You're not logged into PulseSMS",
+	AsmuxWANotConnected: "You're not connected to PulseSMS",
+	AsmuxWAConnecting:   "Trying to reconnect to PulseSMS.",
+	AsmuxWATimeout:      "PulseSMS is not responding.",
+	AsmuxWAPingFalse:    "PulseSMS returned an error, reconnecting.",
+	AsmuxWAPingError:    "PulseSMSApp returned an unknown error",
 }
 
 type AsmuxPong struct {
@@ -116,7 +116,7 @@ func (prov *ProvisioningAPI) AsmuxPing(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if user.Pulse.IsConnected() {
 			pingID := atomic.AddUint32(&asmuxPingID, 1)
-			user.log.Debugfln("Pinging WhatsApp mobile due to asmux /ping API request (ID %d)", pingID)
+			user.log.Debugfln("Pinging PulseSMS mobile due to asmux /ping API request (ID %d)", pingID)
 			// err := user.Conn.AdminTestWithSuppress(true)
 			// if errors.Is(r.Context().Err(), context.Canceled) {
 			// 	user.log.Warnfln("Ping request %d was canceled before we responded (response was %v)", pingID, err)
