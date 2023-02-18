@@ -647,7 +647,7 @@ const cmdListHelp = `list <contacts|groups> [page] [items per page] - Get a list
 
 const cmdSearchHelp = `search <contacts|groups> <search>`
 
-func formatContacts(contacts bool, input map[string]pulsesms.Contact, filter string, bridge Bridge) (result []string) {
+func formatContacts(contacts bool, input map[string]pulsesms.Contact, filter string, bridge *Bridge) (result []string) {
 	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
 	for _, contact := range input {
 		if strings.Contains(strings.ToLower(contact.Name), filter) {
@@ -658,7 +658,7 @@ func formatContacts(contacts bool, input map[string]pulsesms.Contact, filter str
 					cleanID = reg.ReplaceAllString(cleanID, "")
 				}
 				cID := bridge.Config.Bridge.FormatUsername(cleanID)
-				contactId := fmt.Sprintf("[${%s}](https://matrix.to/#/@%s:%s)",
+				contactId := fmt.Sprintf("[${%s}](https://matrix.to/#/@%s:%s)", //TODO : change by room id
 					contact.Name,
 					cID,
 					bridge.Config.Homeserver.Domain)
@@ -676,23 +676,28 @@ func formatContacts(contacts bool, input map[string]pulsesms.Contact, filter str
 }
 
 func (handler *CommandHandler) CommandSearch(ce *CommandEvent) {
-	if len(ce.Args) != 2 {
-		ce.Reply("**Usage:** `search <contacts|groups> <search>`")
+	if len(ce.Args) < 2 {
+		ce.Reply("**Usage:** `search <contacts|groups> <search, even multiple words>`")
 		return
 	}
 	mode := strings.ToLower(ce.Args[0])
 	if mode[0] != 'g' && mode[0] != 'c' {
-		ce.Reply("**Usage:** `search <contacts|groups> <search>`")
+		ce.Reply("**Usage:** `search <contacts|groups> <search, even multiple words>`")
 		return
 	}
 	search := strings.ToLower(ce.Args[1])
+	i := 2
+	for i <= len(ce.Args)-1 {
+		search += " " + strings.ToLower(ce.Args[i])
+		i++
+	}
 	contacts := mode[0] == 'c'
 	typeName := "Groups"
 	if contacts {
 		typeName = "Contacts"
 	}
 
-	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, search, *handler.bridge)
+	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, search, handler.bridge)
 	if len(result) == 0 {
 		ce.Reply("No %s found", strings.ToLower(typeName))
 		return
@@ -736,7 +741,7 @@ func (handler *CommandHandler) CommandList(ce *CommandEvent) {
 	if contacts {
 		typeName = "Contacts"
 	}
-	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, "", *handler.bridge)
+	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, "", handler.bridge)
 	if len(result) == 0 {
 		ce.Reply("No %s found", strings.ToLower(typeName))
 		return

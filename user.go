@@ -304,6 +304,8 @@ func (user *User) Connect(evenIfNoSession bool) bool {
 				go func() {
 					for {
 						if user.Pulse.IsConnected() {
+							user.Pulse.Sync()
+							user.Pulse.SyncContacts()
 							user.sendBridgeNotice("reconnected successfully")
 							return
 						}
@@ -618,6 +620,10 @@ func (user *User) intPostLogin() {
 		user.log.Debugfln("intPostLogin syncing...")
 		chatList := []pulsesms.Chat{}
 		err := user.Pulse.Sync()
+		if err != nil {
+			return
+		}
+		err = user.Pulse.SyncContacts()
 		if err != nil {
 			return
 		}
