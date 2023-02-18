@@ -292,7 +292,7 @@ func (user *User) Connect(evenIfNoSession bool) bool {
 		return false
 	}
 
-	user.Pulse.SetMessageHandler(func(m pulsesms.Message) {
+	user.Pulse.SetMessageHandler(func(m pulsesms.Message, a pulsesms.MessageAction) {
 		user.HandleEvent(m)
 	})
 

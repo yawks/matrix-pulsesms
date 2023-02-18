@@ -20,6 +20,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -542,7 +543,14 @@ func (handler *CommandHandler) CommandSync(ce *CommandEvent) {
 	err := user.Pulse.Sync()
 	if err != nil {
 		user.log.Errorln("Error syncing pulse:", err)
-		ce.Reply("Failed to sync contact  and chat list (see logs for details)")
+		ce.Reply("Failed to sync contact and chat list (see logs for details)")
+		return
+	}
+
+	err = user.Pulse.SyncContacts()
+	if err != nil {
+		user.log.Errorln("Error syncing contacts pulse:", err)
+		ce.Reply("Failed to sync contact (see logs for details)")
 		return
 	}
 
@@ -639,11 +647,25 @@ const cmdListHelp = `list <contacts|groups> [page] [items per page] - Get a list
 
 const cmdSearchHelp = `search <contacts|groups> <search>`
 
-func formatContacts(contacts bool, input map[string]pulsesms.Contact, filter string) (result []string) {
+func formatContacts(contacts bool, input map[string]pulsesms.Contact, filter string, bridge Bridge) (result []string) {
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
 	for _, contact := range input {
-		if strings.Contains(filter, contact.Name) {
+		if strings.Contains(strings.ToLower(contact.Name), filter) {
 			if contacts {
-				result = append(result, fmt.Sprintf("* %s - `%s`", contact.Name, contact.PhoneNumber[:len(contact.PhoneNumber)]))
+				displayName, _ := bridge.Config.Bridge.FormatDisplayname(contact)
+				cleanID := contact.PhoneNumber
+				if err == nil {
+					cleanID = reg.ReplaceAllString(cleanID, "")
+				}
+				cID := bridge.Config.Bridge.FormatUsername(cleanID)
+				contactId := fmt.Sprintf("[${%s}](https://matrix.to/#/@%s:%s)",
+					contact.Name,
+					cID,
+					bridge.Config.Homeserver.Domain)
+				result = append(result, fmt.Sprintf("* %s - `%s` %s",
+					displayName,
+					contact.PhoneNumber[:len(contact.PhoneNumber)],
+					contactId))
 			} else {
 				result = append(result, fmt.Sprintf("* %s - `%s`", contact.Name, contact.PhoneNumber))
 			}
@@ -669,7 +691,8 @@ func (handler *CommandHandler) CommandSearch(ce *CommandEvent) {
 	if contacts {
 		typeName = "Contacts"
 	}
-	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, search)
+
+	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, search, *handler.bridge)
 	if len(result) == 0 {
 		ce.Reply("No %s found", strings.ToLower(typeName))
 		return
@@ -688,6 +711,7 @@ func (handler *CommandHandler) CommandList(ce *CommandEvent) {
 		ce.Reply("**Usage:** `list <contacts|groups> [page] [items per page]`")
 		return
 	}
+
 	var err error
 	page := 1
 	max := 100
@@ -712,7 +736,7 @@ func (handler *CommandHandler) CommandList(ce *CommandEvent) {
 	if contacts {
 		typeName = "Contacts"
 	}
-	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, "")
+	result := formatContacts(contacts, ce.User.Pulse.Store.Contacts, "", *handler.bridge)
 	if len(result) == 0 {
 		ce.Reply("No %s found", strings.ToLower(typeName))
 		return
